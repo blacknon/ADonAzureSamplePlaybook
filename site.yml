@@ -1,0 +1,105 @@
+--- 
+- name: Create Base
+  hosts: localhost
+  connection: local
+  vars_files:
+    - vars/vars.yml
+    - vars/azure_vms.yml
+  roles:
+    - azure_base
+
+- name: Create VMs
+  hosts: localhost
+  connection: local
+  vars_files:
+    - vars/vars.yml
+    - vars/azure_vms.yml
+  roles:
+    - azure_vms
+
+- name: Add hosts type
+  hosts: localhost
+  connection: local
+  vars_files:
+    - vars/vars.yml
+    - vars/azure_vms.yml
+  tasks:
+    - include: tasks/add_hosts.yml
+      with_items: "{{ azure_vms }}"
+      loop_control:
+        loop_var: user
+
+- name: Create AD forest
+  gather_facts: no
+  hosts: server[0]
+  remote_user: "{{ azure_server_user }}"
+  vars_files:
+    - vars/vars.yml
+  vars:
+    ansible_user: "{{ azure_server_user }}"
+    ansible_password: "{{ azure_server_pass }}"
+    ansible_port: 5986
+    ansible_connection: winrm
+    ansible_winrm_server_cert_validation: ignore
+    ad_opts:
+      DomainName: "{{ ad_domain }}"
+      DomainMode: Win2012R2
+      ForestMode: Win2012R2
+      SafeModeAdministratorPassword: "{{ azure_server_pass }}"
+      DatabasePath: 'C:\ADDS\NTDS'
+      LogPath: 'C:\ADDS\NTDS'
+      SysvolPath: 'C:\ADDS\SYSVOL'
+  tasks:
+    - include: tasks/ad-forest.yml
+
+- name: Add AD DomainController
+  gather_facts: no
+  hosts: server[1:]
+  remote_user: "{{ azure_server_user }}"
+  vars_files:
+    - vars/vars.yml
+  vars:
+    ansible_user: "{{ azure_server_user }}"
+    ansible_password: "{{ azure_server_pass }}"
+    ansible_port: 5986
+    ansible_connection: winrm
+    ansible_winrm_server_cert_validation: ignore
+    ad_opts:
+      DomainName: "{{ ad_domain }}"
+      SafeModeAdministratorPassword: "{{ azure_server_pass }}"
+      DatabasePath: 'C:\ADDS\NTDS'
+      LogPath: 'C:\ADDS\NTDS'
+      SysvolPath: 'C:\ADDS\SYSVOL'
+  tasks:
+    - include: tasks/ad-domaincontroller.yml
+
+- name: Create Active Directory Groups and Users
+  gather_facts: no
+  hosts: server[0]
+  remote_user: "{{ azure_server_user }}"
+  vars_files:
+    - vars/vars.yml
+    - vars/ad_users.yml
+  vars:
+    ansible_user: "{{ azure_server_user }}"
+    ansible_password: "{{ azure_server_pass }}"
+    ansible_port: 5986
+    ansible_connection: winrm
+    ansible_winrm_server_cert_validation: ignore
+  tasks:
+    - include: tasks/add_users.yml
+
+- name: Active Directory join Windows Clinet
+  gather_facts: no
+  hosts: client
+  remote_user: "{{ azure_client_user }}"
+  vars_files:
+    - vars/vars.yml
+  vars:
+    ansible_user: "{{ azure_client_user }}"
+    ansible_password: "{{ azure_client_pass }}"
+    ansible_port: 5986
+    ansible_connection: winrm
+    ansible_winrm_server_cert_validation: ignore
+  tasks:
+    - include: tasks/join_client.yml

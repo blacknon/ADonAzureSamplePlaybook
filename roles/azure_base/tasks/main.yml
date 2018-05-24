@@ -1,0 +1,77 @@
+---
+- name: Create Azure ResourceGroup.
+  azure_rm_resourcegroup:
+      name: "{{ azure_rg_name }}"
+      location: "{{ azure_rg_location }}"
+
+- name: Create Azure VirtualNetwork.
+  azure_rm_virtualnetwork:
+      resource_group: "{{ azure_rg_name }}"
+      name: "{{ azure_vn_name }}"
+      address_prefixes_cidr: "{{ azure_vn_cidr }}"
+      dns_servers:
+        - "{{ ad_server_ip1 }}"
+        - "{{ ad_server_ip2 }}"
+        - "8.8.8.8"
+
+- name: Create Security Group.
+  azure_rm_securitygroup:
+      resource_group: "{{ azure_rg_name }}"
+      name: "{{ azure_sg_name }}"
+      purge_rules: yes
+      rules:
+        - name: DenySSH
+          protocol: Tcp
+          destination_port_range: 22
+          access: Deny
+          priority: 100
+          direction: Inbound
+
+- name: Update Security Group.
+  azure_rm_securitygroup:
+      resource_group: "{{ azure_rg_name }}"
+      name: "{{ azure_sg_name }}"
+      rules:
+        - name: AllowSpSSH
+          protocol: Tcp
+          source_address_prefix: "{{ from_global_ip }}"
+          destination_port_range: 22
+          access: Allow
+          priority: 101
+          direction: Inbound
+        - name: AllowSpRDP
+          protocol: Tcp
+          source_address_prefix: "{{ from_global_ip }}"
+          destination_port_range: 3389
+          access: Allow
+          priority: 102
+          direction: Inbound
+        - name: AllowSpWinrm
+          protocol: Tcp
+          source_address_prefix: "{{ from_global_ip }}"
+          destination_port_range: 5985
+          access: Allow
+          priority: 103
+          direction: Inbound
+        - name: AllowSpWinrmSSL
+          protocol: Tcp
+          source_address_prefix: "{{ from_global_ip }}"
+          destination_port_range: 5986
+          access: Allow
+          priority: 104
+          direction: Inbound
+
+- name: Create Azure VirtualNetwork Subnet.
+  azure_rm_subnet:
+      resource_group: "{{ azure_rg_name }}"
+      virtual_network_name: "{{ azure_vn_name }}"
+      name: "{{ azure_vn_subnet_name }}"
+      address_prefix_cidr: "{{ azure_vn_subnet_cidr }}"
+      security_group_name: "{{ azure_sg_name }}"
+
+- name: Create storage account
+  azure_rm_storageaccount:
+      name: "{{ azure_storage_name }}"
+      account_type: "{{ azure_storage_type }}"
+      resource_group: "{{ azure_rg_name }}"
+

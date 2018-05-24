@@ -1,0 +1,36 @@
+---
+- name: Wait for windows system reboot
+  wait_for:
+    port: "{{ ansible_port }}"
+    host: '{{ (ansible_ssh_host|default(ansible_host))|default(inventory_hostname) }}'
+    timeout: 1200
+    delay: 10
+  vars:
+    ansible_connection: local
+
+- name: ping test
+  win_ping:
+  
+- name: Win_feture
+  win_feature:
+    name: AD-Domain-Services
+    include_management_tools: yes
+
+- name: Windows firewall settings(WinRM HTTPS)
+  raw: 'netsh advfirewall firewall add rule Profile=domain name="Allow WinRM HTTPS" d=in localport=5986 protocol=TCP action=allow'
+
+- name: Windows firewall settings(DNS)
+  raw: 'netsh advfirewall firewall add rule Profile=domain name="Allow DNS" d=in localport=53 protocol=UDP action=allow'
+
+- name: Create Temp Dir
+  win_file:
+    path: C:\Temp
+    state: directory
+
+- name: Push powerShell script templetes(Add AD DC).
+  win_template:
+    src: templates/Install-ADDSDomainController.ps1.j2
+    dest: C:\Temp\Install-ADDS.ps1
+
+- name: Kick script
+  win_shell: C:\Temp\Install-ADDS.ps1

@@ -1,0 +1,35 @@
+---
+from_global_ip: xxx.xxx.xxx.xxx/32
+
+# Azure Resource Group
+azure_rg_name: AnsibleAD-RG
+azure_rg_location: eastasia
+
+# Azure Virtual Network
+azure_vn_name: AnsibleAD-NW
+azure_vn_cidr: 192.168.0.0/16
+
+# Azure Security Group
+azure_sg_name: AnsibleAD-SG
+
+# Azure Virtual Network Subnets
+azure_vn_subnet_name: AnsibleAD-Subnet
+azure_vn_subnet_cidr: 192.168.10.0/24
+
+# Azure Storage Account
+azure_storage_name: ansibleadtest
+azure_storage_type: Standard_LRS
+
+# Azure Server ID/Password
+azure_server_user: SrvAdmin
+azure_server_pass: AdminSampleP@ssw0rd123
+
+# Azure Client ID/Password
+azure_client_user: Client
+azure_client_pass: ClientSampleP@ssw0rd123
+
+# ActiveDirectory Infomation
+ad_domain: adtest.localdomain
+ad_server_ip1: 192.168.10.11
+ad_server_ip2: 192.168.10.12
+ad_groups: ADClient

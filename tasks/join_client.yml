@@ -1,0 +1,25 @@
+---
+- name: ping test
+  win_ping:
+
+- name: join Active Directory
+  win_domain_membership:
+    dns_domain_name: "{{ ad_domain }}"
+    hostname: "{{ inventory_hostname }}"
+    domain_admin_user: "{{ azure_server_user }}@{{ ad_domain }}"
+    domain_admin_password: "{{ azure_server_pass }}"
+    state: domain
+  register: domain_state
+
+- name: Reboot PC
+  win_reboot:
+  when: domain_state.reboot_required
+
+- name: Wait for windows reboot
+  wait_for:
+    port: "{{ ansible_port }}"
+    host: '{{ (ansible_ssh_host|default(ansible_host))|default(inventory_hostname) }}'
+    timeout: 600
+    delay: 10
+  vars:
+    ansible_connection: local

@@ -1,0 +1,100 @@
+---
+azure_vms:
+  - name: s-win2012R2-01
+    type: server
+    vm_size: Standard_B1ms
+    os_type: Windows
+    username: "{{ azure_server_user }}"
+    password: "{{ azure_server_pass }}"
+    os_disk_caching: ReadWrite
+    private_ip_address: 192.168.10.11
+    private_ip_allocation_method: Static
+    subnet_name: "{{ azure_vn_subnet_name }}"
+    image_offer: WindowsServer
+    image_publisher: MicrosoftWindowsServer
+    image_sku: 2012-R2-Datacenter
+    image_version: latest
+  - name: s-win2012R2-02
+    type: server
+    vm_size: Standard_B1ms
+    os_type: Windows
+    username: "{{ azure_server_user }}"
+    password: "{{ azure_server_pass }}"
+    os_disk_caching: ReadWrite
+    private_ip_address: 192.168.10.12
+    private_ip_allocation_method: Static
+    subnet_name: "{{ azure_vn_subnet_name }}"
+    image_offer: WindowsServer
+    image_publisher: MicrosoftWindowsServer
+    image_sku: 2012-R2-Datacenter
+    image_version: latest
+  - name: c-win10-01
+    type: client
+    vm_size: Standard_B1ms
+    os_type: Windows
+    username: "{{ azure_client_user }}"
+    password: "{{ azure_client_pass }}"
+    os_disk_caching: ReadWrite
+    private_ip_address: 192.168.10.101
+    private_ip_allocation_method: Static
+    subnet_name: "{{ azure_vn_subnet_name }}"
+    image_offer: Windows-10
+    image_publisher: MicrosoftWindowsDesktop
+    image_sku: RS2-Pro
+    image_version: latest
+  - name: c-win10-02
+    type: client
+    vm_size: Standard_B1ms
+    os_type: Windows
+    username: "{{ azure_client_user }}"
+    password: "{{ azure_client_pass }}"
+    os_disk_caching: ReadWrite
+    private_ip_address: 192.168.10.102
+    private_ip_allocation_method: Static
+    subnet_name: "{{ azure_vn_subnet_name }}"
+    image_offer: Windows-10
+    image_publisher: MicrosoftWindowsDesktop
+    image_sku: RS2-Pro
+    image_version: latest
+  - name: c-win10-03
+    type: client
+    vm_size: Standard_B1ms
+    os_type: Windows
+    username: "{{ azure_client_user }}"
+    password: "{{ azure_client_pass }}"
+    os_disk_caching: ReadWrite
+    private_ip_address: 192.168.10.103
+    private_ip_allocation_method: Static
+    subnet_name: "{{ azure_vn_subnet_name }}"
+    image_offer: Windows-10
+    image_publisher: MicrosoftWindowsDesktop
+    image_sku: RS2-Pro
+    image_version: latest
+  - name: c-win10-04
+    type: client
+    vm_size: Standard_B1ms
+    os_type: Windows
+    username: "{{ azure_client_user }}"
+    password: "{{ azure_client_pass }}"
+    os_disk_caching: ReadWrite
+    private_ip_address: 192.168.10.104
+    private_ip_allocation_method: Static
+    subnet_name: "{{ azure_vn_subnet_name }}"
+    image_offer: Windows-10
+    image_publisher: MicrosoftWindowsDesktop
+    image_sku: RS2-Pro
+    image_version: latest
+  - name: c-win10-05
+    type: client
+    vm_size: Standard_B1ms
+    os_type: Windows
+    username: "{{ azure_client_user }}"
+    password: "{{ azure_client_pass }}"
+    os_disk_caching: ReadWrite
+    private_ip_address: 192.168.10.105
+    private_ip_allocation_method: Static
+    subnet_name: "{{ azure_vn_subnet_name }}"
+    image_offer: Windows-10
+    image_publisher: MicrosoftWindowsDesktop
+    image_sku: RS2-Pro
+    image_version: latest

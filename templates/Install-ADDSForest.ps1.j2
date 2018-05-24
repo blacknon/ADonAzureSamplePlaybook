@@ -1,0 +1,8 @@
+Install-ADDSForest -Force
+{%- for key, value in ad_opts.iteritems() -%}
+{%- if key == 'SafeModeAdministratorPassword' %}
+ -{{ key }} (ConvertTo-SecureString -AsPlainText -Force -String "{{ value }}")
+{%- else %}
+ -{{ key }} "{{ value }}"
+{%- endif -%}
+{%- endfor -%}

@@ -1,0 +1,13 @@
+---
+- name: Get public ip list.
+  azure_rm_publicipaddress_facts:
+    resource_group: '{{ azure_rg_name }}'
+    name: '{{ user.name }}-IP'
+  register: azure_ip
+
+- name: Add new instance to host group
+  add_host:
+    hostname: "{{ item.name | regex_replace('-IP','') }}"
+    ansible_host: "{{ item.properties.ipAddress }}"
+    groups: "{{ user.type }}"
+  with_items: "{{ azure_ip.ansible_facts.azure_publicipaddresses }}"

@@ -1,0 +1,19 @@
+---
+- name: Create Domain Group
+  win_domain_group:
+    name: "{{ ad_groups }}"
+    scope: domainlocal
+    category: security
+    ignore_protection: yes
+
+- name: Create Domain Users
+  win_domain_user:
+    name: "{{ item.name }}"
+    upn: "{{ item.name }}@{{ ad_domain }}"
+    password: "{{ item.password }}"
+    password_never_expires: yes
+    state: present
+    groups:
+      - "{{ ad_groups }}"
+    company: "{{ ad_domain }}"
+  with_items: "{{ ad_users }}"

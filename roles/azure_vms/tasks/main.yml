@@ -1,0 +1,54 @@
+---
+- name: Create public IP
+  azure_rm_publicipaddress:
+    name: "{{ item.name }}-IP"
+    allocation_method: Static
+    resource_group: "{{ azure_rg_name }}"
+  with_items: "{{ azure_vms }}"
+
+- name: Create NIC
+  azure_rm_networkinterface:
+    name: "{{ item.name }}-NIC"
+    subnet: "{{ item.subnet_name }}"
+    public_ip_name: "{{ item.name }}-IP"
+    private_ip_address: "{{ item.private_ip_address }}"
+    private_ip_allocation_method: "{{ item.private_ip_allocation_method }}"
+    virtual_network: "{{ azure_vn_name }}"
+    resource_group: "{{ azure_rg_name }}"
+    security_group_name: "{{ azure_sg_name }}"
+  with_items: "{{ azure_vms }}"
+
+- name: Create VM
+  azure_rm_virtualmachine:
+    name: "{{ item.name }}"
+    vm_size: "{{ item.vm_size }}"
+    storage_blob: "{{ item.name }}-OS.vhd"
+    admin_username: "{{ item.username }}"
+    admin_password: "{{ item.password }}"
+    os_type: "{{ item.os_type }}"
+    os_disk_caching: "{{ item.os_disk_caching }}"
+    network_interfaces: "{{ item.name }}-NIC"
+    image:
+      offer: "{{ item.image_offer }}"
+      publisher: "{{ item.image_publisher }}"
+      sku: "{{ item.image_sku }}"
+      version: "{{ item.image_version }}"
+    storage_account: "{{ azure_storage_name }}"
+    resource_group: "{{ azure_rg_name }}"
+  with_items: "{{ azure_vms }}"
+
+- name: Add VM Extension
+  azure_rm_virtualmachine_extension:
+    name: "{{ item.name }}-extension"
+    location: "{{ azure_rg_location }}"
+    resource_group: "{{ azure_rg_name }}"
+    virtual_machine_name: "{{ item.name }}"
+    publisher: Microsoft.Compute
+    virtual_machine_extension_type: CustomScriptExtension
+    type_handler_version: 1.8
+    settings:  {
+      "fileUris": ["https://raw.githubusercontent.com/ansible/ansible/devel/examples/scripts/ConfigureRemotingForAnsible.ps1"],
+      "commandToExecute": "powershell.exe -ExecutionPolicy Unrestricted -File ConfigureRemotingForAnsible.ps1"
+    }
+    auto_upgrade_minor_version: true
+  with_items: "{{ azure_vms }}"

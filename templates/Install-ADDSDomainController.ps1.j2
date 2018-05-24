@@ -1,0 +1,9 @@
+$Cred = New-Object PSCredential "{{ ansible_user }}@{{ ad_domain }}",(ConvertTo-SecureString "{{ ansible_password }}" -AsPlainText -Force)
+Install-ADDSDomainController -Force -InstallDns -Credential $Cred
+{%- for key, value in ad_opts.iteritems() -%}
+{%- if key == 'SafeModeAdministratorPassword' %}
+ -{{ key }} (ConvertTo-SecureString -AsPlainText -Force -String "{{ value }}")
+{%- else %}
+ -{{ key }} "{{ value }}"
+{%- endif -%}
+{%- endfor -%}
