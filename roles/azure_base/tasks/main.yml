@@ -20,10 +20,11 @@
       name: "{{ azure_sg_name }}"
       purge_rules: yes
       rules:
-        - name: DenySSH
+        - name: AllowSpSSH
           protocol: Tcp
+          source_address_prefix: "{{ from_global_ip }}"
           destination_port_range: 22
-          access: Deny
+          access: Allow
           priority: 100
           direction: Inbound
 
@@ -32,33 +33,26 @@
       resource_group: "{{ azure_rg_name }}"
       name: "{{ azure_sg_name }}"
       rules:
-        - name: AllowSpSSH
-          protocol: Tcp
-          source_address_prefix: "{{ from_global_ip }}"
-          destination_port_range: 22
-          access: Allow
-          priority: 101
-          direction: Inbound
         - name: AllowSpRDP
           protocol: Tcp
           source_address_prefix: "{{ from_global_ip }}"
           destination_port_range: 3389
           access: Allow
-          priority: 102
+          priority: 101
           direction: Inbound
         - name: AllowSpWinrm
           protocol: Tcp
           source_address_prefix: "{{ from_global_ip }}"
           destination_port_range: 5985
           access: Allow
-          priority: 103
+          priority: 102
           direction: Inbound
         - name: AllowSpWinrmSSL
           protocol: Tcp
           source_address_prefix: "{{ from_global_ip }}"
           destination_port_range: 5986
           access: Allow
-          priority: 104
+          priority: 103
           direction: Inbound
 
 - name: Create Azure VirtualNetwork Subnet.
