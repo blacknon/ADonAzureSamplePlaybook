@@ -11,6 +11,13 @@
     state: domain
   register: domain_state
 
+- name: Setup enable Remote Desktop at Active Directory users
+  win_group_membership:
+    name: Remote Desktop Users
+    members:
+      - "{{ ad_domain }}\\{{ ad_groups }}"
+    state: present
+
 - name: Reboot PC
   win_reboot:
   when: domain_state.reboot_required

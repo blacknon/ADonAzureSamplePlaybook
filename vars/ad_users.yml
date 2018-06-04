@@ -1,12 +1,12 @@
 ---
 ad_users:
   - name: aduser001
-    password: 001P@ssW0rd123xYz
+    password: 001P@ssW0rdxYz
   - name: aduser002
-    password: 002P@ssW0rd123xYz
+    password: 002P@ssW0rdxYz
   - name: aduser003
-    password: 003P@ssW0rd123xYz
+    password: 003P@ssW0rdxYz
   - name: aduser004
-    password: 004P@ssW0rd123xYz
+    password: 004P@ssW0rdxYz
   - name: aduser005
-    password: 005P@ssW0rd123xYz
+    password: 005P@ssW0rdxYz
